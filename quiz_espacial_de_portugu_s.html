@@ -1,0 +1,1130 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Missão Português: Quiz dos Pronomes</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: linear-gradient(135deg, #090d16 0%, #111827 40%, #1e112a 100%);
+            color: #f8fafc;
+            min-height: 100vh;
+        }
+
+        .font-game {
+            font-family: 'Fredoka One', cursive;
+        }
+
+        .glass-card {
+            background: rgba(23, 31, 51, 0.9);
+            backdrop-filter: blur(16px);
+            border: 2px solid rgba(147, 51, 234, 0.35);
+            box-shadow: 0 15px 35px -10px rgba(0, 0, 0, 0.7), 0 0 25px rgba(147, 51, 234, 0.25);
+        }
+
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.8);
+            border-radius: 8px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #7c3aed;
+            border-radius: 8px;
+            border: 2px solid rgba(15, 23, 42, 0.8);
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a855f7;
+        }
+
+        @keyframes pulse-btn {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+        }
+        .animate-pulse-btn {
+            animation: pulse-btn 2.2s infinite ease-in-out;
+        }
+
+        .option-btn {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .option-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            border-color: #c084fc;
+            background: rgba(192, 132, 252, 0.15);
+        }
+        .option-btn.selected {
+            border-color: #3b82f6;
+            background: rgba(59, 130, 246, 0.25);
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
+        }
+        .option-btn.correct {
+            border-color: #22c55e !important;
+            background: rgba(34, 197, 94, 0.25) !important;
+            color: #4ade80 !important;
+        }
+        .option-btn.incorrect {
+            border-color: #ef4444 !important;
+            background: rgba(239, 68, 68, 0.25) !important;
+            color: #f87171 !important;
+        }
+    </style>
+</head>
+<body class="p-2 sm:p-4 md:p-6 min-h-screen flex flex-col justify-between">
+
+    <!-- CABEÇALHO DA APLICAÇÃO -->
+    <header class="max-w-5xl mx-auto w-full mb-4 flex justify-between items-center bg-slate-900/90 p-3 sm:p-4 rounded-2xl border border-purple-500/40 backdrop-blur-md">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-tr from-purple-600 via-pink-500 to-amber-400 flex items-center justify-center text-2xl shadow-lg shadow-purple-500/30 animate-bounce">
+                🚀
+            </div>
+            <div>
+                <h1 class="font-game text-xl sm:text-2xl text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-pink-400 to-purple-400">
+                    MISSÃO PORTUGUÊS
+                </h1>
+                <p class="text-xs text-purple-200 font-bold hidden sm:block">Aventura dos Pronomes no Espaço!</p>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-2 sm:gap-4">
+            <button id="open-menu-btn" onclick="toggleQuestionMenu()" class="hidden bg-slate-800 hover:bg-slate-700 text-purple-300 px-3 py-2 rounded-xl font-bold text-xs sm:text-sm border border-purple-500/40 transition flex items-center gap-2">
+                <i class="fa-solid fa-list-check text-yellow-400"></i>
+                <span class="hidden sm:inline">Navegador</span> (30)
+            </button>
+            <div id="score-pill" class="hidden bg-purple-950/90 border border-purple-400/50 px-3.5 py-1.5 rounded-xl flex items-center gap-2">
+                <i class="fa-solid fa-star text-yellow-400 text-lg"></i>
+                <span id="score-text" class="font-game text-yellow-300 text-sm sm:text-base">0 / 30</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTAINER -->
+    <main class="max-w-5xl mx-auto w-full flex-1 flex flex-col justify-center my-auto">
+
+        <!-- TELA 1: INTRODUÇÃO E RESUMO TEÓRICO (APENAS RESUMO TEÓRICO) -->
+        <section id="screen-welcome" class="glass-card p-4 sm:p-8 rounded-3xl relative overflow-hidden">
+            <div class="text-center mb-5">
+                <span class="inline-block bg-purple-500/20 text-purple-300 text-xs sm:text-sm px-4 py-1.5 rounded-full border border-purple-500/40 font-bold mb-2">
+                    👾 Central de Treinamento Espacial
+                </span>
+                <h2 class="font-game text-2xl sm:text-4xl text-yellow-300 mb-2">
+                    Resumo do Conhecimento
+                </h2>
+                <p class="text-xs sm:text-sm text-slate-300 max-w-2xl mx-auto">
+                    Revise os conceitos abaixo antes de decolar! O texto para a interpretação de texto será liberado assim que você iniciar o quiz.
+                </p>
+            </div>
+
+            <!-- CAIXA DE ROLAGEM COM O RESUMO TEÓRICO DOS PRONOMES -->
+            <div class="bg-slate-950/80 border border-slate-700/80 rounded-2xl p-4 sm:p-6 max-h-[380px] overflow-y-auto space-y-6 text-slate-200 text-sm sm:text-base leading-relaxed">
+                
+                <!-- SEÇÃO PRONOMES DEMONSTRATIVOS -->
+                <div class="space-y-3">
+                    <div class="flex items-center gap-2 text-pink-400 font-game text-lg sm:text-xl border-b border-pink-500/30 pb-1">
+                        👉 1. Pronomes Demonstrativos
+                    </div>
+                    <p class="text-xs sm:text-sm text-slate-300">
+                        Os pronomes demonstrativos indicam a posição de algo ou alguém em relação às pessoas do discurso (quem fala, com quem se fala ou de quem se fala).
+                    </p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 my-2">
+                        <!-- ESTE / ESTA / ISTO -->
+                        <div class="bg-slate-900/90 p-3.5 rounded-xl border border-pink-500/40">
+                            <h4 class="font-bold text-pink-300 text-sm mb-1">Perto de quem fala (1ª pessoa)</h4>
+                            <ul class="text-xs space-y-1 text-slate-200 font-medium">
+                                <li>• Singular: <span class="text-yellow-300 font-bold">este, esta, isto</span></li>
+                                <li>• Plural: <span class="text-yellow-300 font-bold">estes, estas</span></li>
+                            </ul>
+                            <p class="text-xs text-pink-200/80 italic mt-2">Exemplo: "<span class="underline">Esta</span> caneta aqui é minha."</p>
+                        </div>
+
+                        <!-- ESSE / ESSA / ISSO -->
+                        <div class="bg-slate-900/90 p-3.5 rounded-xl border border-purple-500/40">
+                            <h4 class="font-bold text-purple-300 text-sm mb-1">Perto de quem ouve (2ª pessoa)</h4>
+                            <ul class="text-xs space-y-1 text-slate-200 font-medium">
+                                <li>• Singular: <span class="text-yellow-300 font-bold">esse, essa, isso</span></li>
+                                <li>• Plural: <span class="text-yellow-300 font-bold">esses, essas</span></li>
+                            </ul>
+                            <p class="text-xs text-purple-200/80 italic mt-2">Exemplo: "<span class="underline">Esse</span> brinquedo aí com você."</p>
+                        </div>
+
+                        <!-- AQUELE / AQUELA / AQUILO -->
+                        <div class="bg-slate-900/90 p-3.5 rounded-xl border border-cyan-500/40">
+                            <h4 class="font-bold text-cyan-300 text-sm mb-1">Longe dos dois (3ª pessoa)</h4>
+                            <ul class="text-xs space-y-1 text-slate-200 font-medium">
+                                <li>• Singular: <span class="text-yellow-300 font-bold">aquele, aquela, aquilo</span></li>
+                                <li>• Plural: <span class="text-yellow-300 font-bold">aqueles, aquelas</span></li>
+                            </ul>
+                            <p class="text-xs text-cyan-200/80 italic mt-2">Exemplo: "<span class="underline">Aquele</span> avião lá no alto."</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SEÇÃO PRONOMES POSSESSIVOS -->
+                <div class="space-y-3">
+                    <div class="flex items-center gap-2 text-cyan-400 font-game text-lg sm:text-xl border-b border-cyan-500/30 pb-1">
+                        🎁 2. Pronomes Possessivos
+                    </div>
+                    <p class="text-xs sm:text-sm text-slate-300">
+                        Indicam ideia de posse, propriedade ou pertencimento em relação às pessoas do discurso!
+                    </p>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-xs sm:text-sm text-left bg-slate-900/90 rounded-xl overflow-hidden border border-slate-800">
+                            <thead class="bg-slate-800 text-cyan-300">
+                                <tr>
+                                    <th class="p-2.5">Pessoa</th>
+                                    <th class="p-2.5">Masculino (Sing. / Plural)</th>
+                                    <th class="p-2.5">Feminino (Sing. / Plural)</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-800">
+                                <tr>
+                                    <td class="p-2.5 font-bold text-slate-300">1ª Sing. (Eu)</td>
+                                    <td class="p-2.5 text-yellow-300 font-semibold">meu / meus</td>
+                                    <td class="p-2.5 text-yellow-300 font-semibold">minha / minhas</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-2.5 font-bold text-slate-300">2ª Sing. (Tu)</td>
+                                    <td class="p-2.5 text-yellow-300 font-semibold">teu / teus</td>
+                                    <td class="p-2.5 text-yellow-300 font-semibold">tua / tuas</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-2.5 font-bold text-slate-300">3ª Sing. (Ele/Ela)</td>
+                                    <td class="p-2.5 text-yellow-300 font-semibold">seu / seus</td>
+                                    <td class="p-2.5 text-yellow-300 font-semibold">sua / suas</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-2.5 font-bold text-slate-300">1ª Plural (Nós)</td>
+                                    <td class="p-2.5 text-yellow-300 font-semibold">nosso / nossos</td>
+                                    <td class="p-2.5 text-yellow-300 font-semibold">nossa / nossas</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-2.5 font-bold text-slate-300">2ª Plural (Vós)</td>
+                                    <td class="p-2.5 text-yellow-300 font-semibold">vosso / vossos</td>
+                                    <td class="p-2.5 text-yellow-300 font-semibold">vossa / vossas</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-2.5 font-bold text-slate-300">3ª Plural (Eles/Elas)</td>
+                                    <td class="p-2.5 text-yellow-300 font-semibold">seu / seus</td>
+                                    <td class="p-2.5 text-yellow-300 font-semibold">sua / suas</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- BOTÃO INICIAR -->
+            <div class="mt-6 text-center">
+                <button onclick="startQuiz()" class="animate-pulse-btn w-full sm:w-auto bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 hover:from-emerald-300 hover:to-cyan-300 text-slate-950 font-game text-xl px-10 py-4 rounded-2xl shadow-xl shadow-emerald-500/30 transform transition active:scale-95 flex items-center justify-center gap-3 mx-auto border-2 border-emerald-200">
+                    <i class="fa-solid fa-rocket"></i> INICIAR QUIZ ESPACIAL
+                </button>
+            </div>
+        </section>
+
+        <!-- TELA 2: ÁREA DAS QUESTÕES DO QUIZ -->
+        <section id="screen-quiz" class="hidden glass-card p-4 sm:p-8 rounded-3xl relative">
+            
+            <!-- Barra de Progresso Superior -->
+            <div class="mb-4">
+                <div class="flex justify-between items-center text-xs sm:text-sm font-bold text-purple-300 mb-1.5">
+                    <span id="question-category-tag" class="bg-purple-900/80 px-3 py-1 rounded-full border border-purple-400/40 text-purple-200">
+                        Parte 1: Texto & Interpretação
+                    </span>
+                    <span id="question-number-tag" class="text-yellow-400 font-game">
+                        Questão 1 de 30
+                    </span>
+                </div>
+                <div class="w-full bg-slate-950 h-3 rounded-full overflow-hidden p-0.5 border border-slate-800">
+                    <div id="progress-bar" class="bg-gradient-to-r from-purple-500 via-pink-500 to-yellow-400 h-full rounded-full transition-all duration-300" style="width: 3.33%"></div>
+                </div>
+            </div>
+
+            <!-- CAIXA DO TEXTO DE LEITURA COMPLETO (VISÍVEL APENAS NAS QUESTÕES 1 A 6) -->
+            <div id="text-reference-box" class="mb-5 bg-slate-950/90 p-4 rounded-2xl border border-cyan-500/40">
+                <div class="flex justify-between items-center mb-2 cursor-pointer" onclick="toggleTextCollapse()">
+                    <span class="text-xs sm:text-sm text-cyan-300 font-bold flex items-center gap-2">
+                        <i class="fa-solid fa-book-open text-yellow-400"></i> Texto Base: "Como surgiu a montanha-russa?"
+                    </span>
+                    <span id="text-toggle-btn" class="text-xs text-cyan-400 font-bold bg-cyan-950 border border-cyan-800 px-2.5 py-1 rounded-lg">
+                        <i class="fa-solid fa-chevron-up"></i> Ocultar
+                    </span>
+                </div>
+
+                <div id="text-reading-content" class="text-xs sm:text-sm text-slate-300 space-y-3 max-h-[220px] overflow-y-auto pr-2 border-t border-slate-800 pt-3 leading-relaxed">
+                    <p class="font-bold text-center text-yellow-300 uppercase tracking-wide">PARA APRENDER — De olho no texto (Texto informativo)</p>
+                    <p class="italic text-cyan-200">Como é uma montanha-russa? Você tem curiosidade de saber como era esse brinquedo no passado?<br>Onde você pode encontrar essa informação?</p>
+                    
+                    <h4 class="font-bold text-slate-100 text-sm sm:text-base text-purple-300">Como surgiu a montanha-russa?</h4>
+                    <p class="font-bold text-pink-300">Lá mesmo, na Rússia</p>
+                    
+                    <p>Foi mesmo na Rússia, como diz o nome. A diversão teria começado no século 15, em montanhas de verdade que formavam gigantescas rampas cobertas de neve. O pessoal subia até o alto para deslizar encosta abaixo sentado sobre blocos de gelo recobertos de palha. O sistema de freios era rudimentar: nos últimos metros, jogava-se areia na pista para reduzir a velocidade dos “carrinhos”.</p>
+                    
+                    <p>Não demorou para que os blocos de gelo fossem substituídos por trenós, que atingiam velocidades maiores. Em 1784, em São Petersburgo, ainda na Rússia dos czares, foi construído o primeiro trenzinho específico para esse fim. Em 1827, foi a vez de os Estados Unidos abrirem a sua primeira montanha-russa, adaptando os trilhos de uma mina de carvão para um passeio que durava mais de duas horas.</p>
+                    
+                    <p>O sistema de freio era manual e podia ser acionado pelos passageiros. A partir daí, o século 19 viveu a febre da montanha-russa, com variadas adaptações.</p>
+
+                    <p>Em vez de descidas radicais, os trenzinhos passeavam por túneis com cenários especialmente montados – nasciam atrações universais dos parques de diversões, como o túnel do amor e o trem fantasma. Em 1846, os franceses inauguraram o looping (trecho em que os trilhos fazem um círculo completo, deixando os passageiros de cabeça para baixo). Mas a montanha-russa como a conhecemos hoje só surgiu em 1884, nos Estados Unidos. Foi também nesse país, em 1959, que surgiu o modelo em tubos de aço, material que permitiu montanhas cada vez mais assustadoras. Há carrinhos que passam dos 160 km/h e algumas quedas superiores a 100 metros.</p>
+
+                    <div class="bg-slate-900 p-2.5 rounded-xl border border-slate-800 text-xs text-slate-400 mt-2">
+                        <p><strong>• Czar:</strong> título dado ao imperador da Rússia.</p>
+                        <p class="text-[11px] mt-1 text-slate-500">SANTORO, André. Como surgiu a montanha-russa? Mundo Estranho/Superinteressante, 18 abr. 2011.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pergunta Atual -->
+            <div class="mb-5">
+                <h3 id="question-statement" class="text-base sm:text-xl font-bold text-slate-100 leading-snug">
+                    Carregando pergunta...
+                </h3>
+            </div>
+
+            <!-- Área de Alternativas -->
+            <div id="options-container" class="space-y-3 mb-6">
+                <!-- Alternativas injetadas via JavaScript -->
+            </div>
+
+            <!-- Caixa de Feedback / Justificativa Pedagógica -->
+            <div id="feedback-box" class="hidden mb-6 p-4 rounded-2xl border transition-all">
+                <div class="flex items-start gap-3">
+                    <div id="feedback-icon" class="text-2xl mt-0.5 shrink-0"></div>
+                    <div>
+                        <h4 id="feedback-title" class="font-game text-base sm:text-lg mb-1"></h4>
+                        <p id="feedback-text" class="text-xs sm:text-sm leading-relaxed"></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botões de Controle de Navegação -->
+            <div class="flex flex-col sm:flex-row justify-between items-center gap-3 pt-3 border-t border-slate-800">
+                <button id="btn-prev" onclick="prevQuestion()" class="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-sm transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-arrow-left"></i> Anterior
+                </button>
+
+                <button id="btn-confirm" onclick="confirmAnswer()" class="w-full sm:w-auto px-8 py-3 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-game text-base shadow-lg shadow-purple-600/30 transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-check-circle text-emerald-400"></i> Confirmar Resposta
+                </button>
+
+                <button id="btn-next" onclick="nextQuestion()" class="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-sm transition flex items-center justify-center gap-2">
+                    Próxima <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- TELA 3: RELATÓRIO FINAL DE DESEMPENHO -->
+        <section id="screen-report" class="hidden glass-card p-6 sm:p-10 rounded-3xl text-center">
+            <div class="inline-block p-4 bg-purple-500/20 rounded-full border border-purple-500/40 mb-3 animate-bounce">
+                <span id="report-emoji" class="text-4xl sm:text-5xl">🏆</span>
+            </div>
+            
+            <h2 id="report-title" class="font-game text-2xl sm:text-4xl text-yellow-300 mb-1">
+                Missão Cumprida!
+            </h2>
+            <p id="report-subtitle" class="text-xs sm:text-base text-slate-300 mb-6">
+                Confira o seu relatório de desempenho espacial abaixo:
+            </p>
+
+            <!-- Grid de Estatísticas -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-6">
+                <div class="bg-emerald-950/70 border border-emerald-500/40 p-4 rounded-2xl">
+                    <span class="text-xs font-bold text-emerald-400 block mb-1">ACERTOS</span>
+                    <span id="stat-correct-count" class="font-game text-2xl sm:text-3xl text-emerald-300">0</span>
+                    <span id="stat-correct-pct" class="text-xs text-emerald-400/80 block mt-1">(0%)</span>
+                </div>
+                <div class="bg-rose-950/70 border border-rose-500/40 p-4 rounded-2xl">
+                    <span class="text-xs font-bold text-rose-400 block mb-1">ERROS</span>
+                    <span id="stat-error-count" class="font-game text-2xl sm:text-3xl text-rose-300">0</span>
+                    <span id="stat-error-pct" class="text-xs text-rose-400/80 block mt-1">(0%)</span>
+                </div>
+                <div class="bg-purple-950/70 border border-purple-500/40 p-4 rounded-2xl">
+                    <span class="text-xs font-bold text-purple-300 block mb-1">DEMONSTRATIVOS</span>
+                    <span id="stat-demo-pct" class="font-game text-xl sm:text-2xl text-purple-200">0%</span>
+                    <span class="text-xs text-purple-300/70 block mt-1">Aproveitamento</span>
+                </div>
+                <div class="bg-cyan-950/70 border border-cyan-500/40 p-4 rounded-2xl">
+                    <span class="text-xs font-bold text-cyan-300 block mb-1">POSSESSIVOS</span>
+                    <span id="stat-poss-pct" class="font-game text-xl sm:text-2xl text-cyan-200">0%</span>
+                    <span class="text-xs text-cyan-300/70 block mt-1">Aproveitamento</span>
+                </div>
+            </div>
+
+            <!-- Caixa de Recomendações de Estudo (Mostra apenas se houver erros relevantes) -->
+            <div id="review-recommendations" class="text-left bg-slate-950/90 border border-slate-700 p-5 rounded-2xl mb-8 space-y-3">
+                <!-- Conteúdo gerado via JS -->
+            </div>
+
+            <!-- Botão Tentar Novamente -->
+            <button onclick="restartQuiz()" class="bg-gradient-to-r from-purple-600 via-pink-600 to-amber-500 hover:from-purple-500 hover:to-amber-400 text-white font-game text-lg px-8 py-3.5 rounded-2xl shadow-xl shadow-purple-600/30 transition transform active:scale-95 inline-flex items-center gap-2">
+                <i class="fa-solid fa-rotate-right"></i> JOGAR NOVAMENTE
+            </button>
+        </section>
+
+    </main>
+
+    <!-- MODAL NAVEGADOR DE QUESTÕES (GRID 1 a 30) -->
+    <div id="question-menu-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="glass-card max-w-2xl w-full p-5 sm:p-6 rounded-3xl border border-purple-500/40 max-h-[90vh] flex flex-col">
+            <div class="flex justify-between items-center mb-4 pb-3 border-b border-slate-800">
+                <h3 class="font-game text-lg sm:text-xl text-yellow-300 flex items-center gap-2">
+                    <i class="fa-solid fa-compass text-pink-400"></i> Navegador da Missão (30 Questões)
+                </h3>
+                <button onclick="toggleQuestionMenu()" class="text-slate-400 hover:text-white text-xl p-1">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="flex flex-wrap gap-3 text-xs mb-4 justify-center">
+                <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-slate-700"></span> Pendente</span>
+                <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-emerald-600"></span> Correta</span>
+                <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-rose-600"></span> Incorreta</span>
+            </div>
+
+            <div id="questions-grid" class="grid grid-cols-5 sm:grid-cols-6 gap-2 sm:gap-3 overflow-y-auto p-1 flex-1">
+                <!-- Botões de 1 a 30 gerados via JS -->
+            </div>
+
+            <button onclick="toggleQuestionMenu()" class="mt-4 w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl font-bold text-sm">
+                Fechar Navegador
+            </button>
+        </div>
+    </div>
+
+    <script>
+        /* BANCO DE DADOS DE QUESTÕES COMPLETO (30 QUESTÕES) */
+        const rawQuestions = [
+            // PARTE 1: TEXTO & INTERPRETAÇÃO (Q1 a Q6 - BASEADAS NO TEXTO DA IMAGEM)
+            {
+                id: 1,
+                part: 1,
+                category: "Parte 1: Texto & Interpretação",
+                type: "multiple",
+                statement: "1. Por que a montanha-russa recebeu esse nome?",
+                options: [
+                    "Porque ela foi inventada nos Estados Unidos e levada para a Rússia.",
+                    "Porque a atração começou na Rússia, onde as pessoas deslizavam em rampas de neve sobre blocos de gelo.",
+                    "Porque 'montanha-russa' era o nome do inventor do brinquedo.",
+                    "Porque os trenzinhos só podiam subir em montanhas altas e geladas do Brasil."
+                ],
+                correctIndex: 1,
+                explanation: "Exato! Conforme o texto: 'Foi mesmo na Rússia, como diz o nome. A diversão teria começado no século 15, em montanhas de verdade que formavam gigantescas rampas cobertas de neve'."
+            },
+            {
+                id: 2,
+                part: 1,
+                category: "Parte 1: Texto & Interpretação",
+                type: "multiple",
+                statement: "2. Quando ela foi inventada?",
+                options: [
+                    "No século 15, com as primeiras rampas de neve na Rússia.",
+                    "Apenas no ano de 2011, quando a reportagem foi escrita.",
+                    "No século 20, nos parques de diversão de Paris.",
+                    "Em 1827, diretamente no Japão."
+                ],
+                correctIndex: 0,
+                explanation: "O texto informa que 'A diversão teria começado no século 15, em montanhas de verdade...' na Rússia."
+            },
+            {
+                id: 3,
+                part: 1,
+                category: "Parte 1: Texto & Interpretação",
+                type: "multiple",
+                statement: "3. Explique como funcionava a primeira montanha-russa:",
+                options: [
+                    "As pessoas voavam em aviões de madeira por cima das montanhas.",
+                    "Os passageiros subiam montanhas de neve e deslizavam encosta abaixo sobre blocos de gelo cobertos de palha.",
+                    "Era um trem movido a eletricidade rápida que dava voltas num túnel escuro.",
+                    "As pessoas usavam patins de rodas para descer o asfalto coberto de areia."
+                ],
+                correctIndex: 1,
+                explanation: "De acordo com o texto, o pessoal subia até o alto para deslizar encosta abaixo sentado sobre blocos de gelo recobertos de palha."
+            },
+            {
+                id: 4,
+                part: 1,
+                category: "Parte 1: Texto & Interpretação",
+                type: "multiple",
+                statement: "Como era o sistema de freios das primeiras montanhas de gelo na Rússia?",
+                options: [
+                    "Usavam-se freios automáticos com tubos de aço modernos.",
+                    "Nos últimos metros, jogava-se areia na pista para reduzir a velocidade.",
+                    "Os passageiros usavam paraquedas para parar os blocos de gelo.",
+                    "Não havia freio e os blocos batiam na parede de pedra."
+                ],
+                correctIndex: 1,
+                explanation: "O texto destaca: 'O sistema de freios era rudimentar: nos últimos metros, jogava-se areia na pista para reduzir a velocidade'."
+            },
+            {
+                id: 5,
+                part: 1,
+                category: "Parte 1: Texto & Interpretação",
+                type: "multiple",
+                statement: "Em 1827, os Estados Unidos criaram a sua primeira montanha-russa adaptando o quê?",
+                options: [
+                    "Os trilhos de uma mina de carvão.",
+                    "O motor de um navio a vapor.",
+                    "A estrutura de uma montanha-russa de circo.",
+                    "As rodas de uma carruagem de cavalos."
+                ],
+                correctIndex: 0,
+                explanation: "O texto afirma: '...adaptando os trilhos de uma mina de carvão para um passeio que durava mais de duas horas'."
+            },
+            {
+                id: 6,
+                part: 1,
+                category: "Parte 1: Texto & Interpretação",
+                type: "tf",
+                statement: "Analise a afirmação abaixo baseada no texto: 'Na frase: \"...abrirem a SUA primeira montanha-russa\", a palavra SUA é um Pronome Possessivo.'",
+                options: ["VERDADEIRO", "FALSO"],
+                correctIndex: 0,
+                explanation: "Correto! 'Sua' é um pronome possessivo referente à 3ª pessoa, indicando a quem pertencia a montanha-russa."
+            },
+
+            // PARTE 2: PRONOMES DEMONSTRATIVOS (Q7 a Q18)
+            {
+                id: 7,
+                part: 2,
+                category: "Parte 2: Pronomes Demonstrativos",
+                type: "multiple",
+                statement: "Qual pronome demonstrativo no masculino singular completa a frase: '______ tênis que estou calçando é muito macio.'?",
+                options: ["Este", "Esse", "Aquele", "Aquilo"],
+                correctIndex: 0,
+                explanation: "Usamos 'este' para coisas que estão junto ou bem perto de quem fala."
+            },
+            {
+                id: 8,
+                part: 2,
+                category: "Parte 2: Pronomes Demonstrativos",
+                type: "multiple",
+                statement: "Qual pronome demonstrativo no feminino plural completa: '______ mochilas aí do seu lado são de quem?'",
+                options: ["Estas", "Essas", "Aquelas", "Isto"],
+                correctIndex: 1,
+                explanation: "Usamos 'essas' (feminino plural) para objetos perto da pessoa com quem falamos ('aí do seu lado')."
+            },
+            {
+                id: 9,
+                part: 2,
+                category: "Parte 2: Pronomes Demonstrativos",
+                type: "multiple",
+                statement: "Para indicar um pássaro voando lá no alto do céu, bem distante de nós, devemos dizer: 'Olhe ______ pássaro!'",
+                options: ["este", "esse", "aquele", "isto"],
+                correctIndex: 2,
+                explanation: "Usamos 'aquele' para objetos ou seres distantes de quem fala e de quem ouve."
+            },
+            {
+                id: 10,
+                part: 2,
+                category: "Parte 2: Pronomes Demonstrativos",
+                type: "multiple",
+                statement: "Assinale a opção que contém apenas pronomes demonstrativos INVARIÁVEIS (que não vão para o feminino nem para o plural):",
+                options: [
+                    "este, esta, estes",
+                    "isto, isso, aquilo",
+                    "aquele, aquela, aqueles",
+                    "esse, essa, esses"
+                ],
+                correctIndex: 1,
+                explanation: "'Isto', 'isso' e 'aquilo' são pronomes demonstrativos invariáveis."
+            },
+            {
+                id: 11,
+                part: 2,
+                category: "Parte 2: Pronomes Demonstrativos",
+                type: "multiple",
+                statement: "Qual pronome preenche corretamente: '______ livros aqui na minha mesa são meus preferidos.'?",
+                options: ["Estes", "Esses", "Aqueles", "Aquilo"],
+                correctIndex: 0,
+                explanation: "'Estes' é o masculino plural para coisas perto do falante ('minha mesa')."
+            },
+            {
+                id: 12,
+                part: 2,
+                category: "Parte 2: Pronomes Demonstrativos",
+                type: "multiple",
+                statement: "Complete a frase apontando para o canetão perto da professora: 'Professora, pode me emprestar ______ canetão que está na sua mão?'",
+                options: ["este", "esse", "aquele", "aquilo"],
+                correctIndex: 1,
+                explanation: "'Esse' serve para coisas perto da pessoa com quem se fala."
+            },
+            {
+                id: 13,
+                part: 2,
+                category: "Parte 2: Pronomes Demonstrativos",
+                type: "multiple",
+                statement: "Qual é a forma no plural e feminino do pronome demonstrativo 'aquele'?",
+                options: ["aqueles", "aquela", "aquelas", "aquilo"],
+                correctIndex: 2,
+                explanation: "O feminino plural de 'aquele' é 'aquelas'."
+            },
+            {
+                id: 14,
+                part: 2,
+                category: "Parte 2: Pronomes Demonstrativos",
+                type: "multiple",
+                statement: "Na frase 'O que é isto que seguro na minha mão?', a palavra ISTO é um pronome:",
+                options: [
+                    "Demonstrativo referente a algo perto de quem fala.",
+                    "Possessivo que indica posse de um brinquedo.",
+                    "Demonstrativo referente a algo longe no horizonte.",
+                    "Pessoal da 3ª pessoa do plural."
+                ],
+                correctIndex: 0,
+                explanation: "'Isto' é um pronome demonstrativo usado para a 1ª pessoa (perto de quem fala)."
+            },
+            {
+                id: 15,
+                part: 2,
+                category: "Parte 2: Pronomes Demonstrativos",
+                type: "multiple",
+                statement: "Qual alternativa completa corretamente: '______ carrinhos lá no final do parque são muito velozes'?",
+                options: ["Estes", "Esses", "Aqueles", "Isto"],
+                correctIndex: 2,
+                explanation: "'Aqueles' é o masculino plural usado para seres distantes."
+            },
+            {
+                id: 16,
+                part: 2,
+                category: "Parte 2: Pronomes Demonstrativos",
+                type: "multiple",
+                statement: "Marque o pronome demonstrativo no FEMININO SINGULAR:",
+                options: ["este", "esta", "esses", "aqueles"],
+                correctIndex: 1,
+                explanation: "'Esta' é o feminino singular do pronome demonstrativo."
+            },
+            {
+                id: 17,
+                part: 2,
+                category: "Parte 2: Pronomes Demonstrativos",
+                type: "multiple",
+                statement: "Se você quer pedir a bola que está nos pés do seu amigo, você diz: 'Passe-me ______ bola!'",
+                options: ["esta", "essa", "aquela", "isto"],
+                correctIndex: 1,
+                explanation: "A bola está com o seu amigo (ouvinte), logo usamos 'essa'."
+            },
+            {
+                id: 18,
+                part: 2,
+                category: "Parte 2: Pronomes Demonstrativos",
+                type: "multiple",
+                statement: "Complete no plural masculino: 'Guarde ______ cadernos aí na sua carteira.'",
+                options: ["estes", "esses", "aqueles", "aquilo"],
+                correctIndex: 1,
+                explanation: "'Esses' é o pronome demonstrativo no masculino plural para objetos perto do ouvinte."
+            },
+
+            // PARTE 3: PRONOMES POSSESSIVOS (Q19 a Q30)
+            {
+                id: 19,
+                part: 3,
+                category: "Parte 3: Pronomes Possessivos",
+                type: "multiple",
+                statement: "Qual pronome possessivo corresponde à 1ª pessoa do singular (EU)?",
+                options: ["teu", "seu", "meu", "nosso"],
+                correctIndex: 2,
+                explanation: "'Meu' (ou 'minha') indica posse em relação à 1ª pessoa do singular (Eu)."
+            },
+            {
+                id: 20,
+                part: 3,
+                category: "Parte 3: Pronomes Possessivos",
+                type: "multiple",
+                statement: "Complete a frase com o pronome possessivo que combina com NÓS: '______ time venceu o campeonato espacial!'",
+                options: ["Meu", "Nosso", "Teu", "Seu"],
+                correctIndex: 1,
+                explanation: "'Nosso' é o pronome possessivo da 1ª pessoa do plural (Nós)."
+            },
+            {
+                id: 21,
+                part: 3,
+                category: "Parte 3: Pronomes Possessivos",
+                type: "multiple",
+                statement: "Se o videogame pertence a TU, nós dizemos que o videogame é:",
+                options: ["seu", "teu", "nosso", "meu"],
+                correctIndex: 1,
+                explanation: "'Teu' é o pronome possessivo referente à 2ª pessoa do singular (Tu)."
+            },
+            {
+                id: 22,
+                part: 3,
+                category: "Parte 3: Pronomes Possessivos",
+                type: "multiple",
+                statement: "Qual é o pronome possessivo no FEMININO PLURAL referente à 1ª pessoa do singular (EU)?",
+                options: ["minhas", "tuas", "suas", "nossas"],
+                correctIndex: 0,
+                explanation: "Para 'Eu' (1ª pessoa), o feminino plural referente às coisas que me pertencem é 'minhas'."
+            },
+            {
+                id: 23,
+                part: 3,
+                category: "Parte 3: Pronomes Possessivos",
+                type: "multiple",
+                statement: "Complete a frase: 'O astronauta vestiu o trajeto de proteção. O capacete ______ brilhava no escuro.'",
+                options: ["meu", "teu", "seu", "nosso"],
+                correctIndex: 2,
+                explanation: "O capacete pertencia a ele (3ª pessoa - astronauta), logo o pronome correto é 'seu'."
+            },
+            {
+                id: 24,
+                part: 3,
+                category: "Parte 3: Pronomes Possessivos",
+                type: "multiple",
+                statement: "Assinale a opção que contém APENAS pronomes possessivos no MASCULINO PLURAL:",
+                options: [
+                    "meu, teu, seu",
+                    "meus, teus, nossos",
+                    "minha, tua, nossa",
+                    "sua, vossa, minhas"
+                ],
+                correctIndex: 1,
+                explanation: "'Meus', 'teus' e 'nossos' terminam com -s e referem-se ao masculino plural."
+            },
+            {
+                id: 25,
+                part: 3,
+                category: "Parte 3: Pronomes Possessivos",
+                type: "multiple",
+                statement: "Complete a frase referente a VÓS (2ª pessoa do plural): 'Vós trouxestes os ______ desenhos?'",
+                options: ["nossos", "vossos", "seus", "meus"],
+                correctIndex: 1,
+                explanation: "'Vossos' é o pronome possessivo masculino plural para a 2ª pessoa do plural (Vós)."
+            },
+            {
+                id: 26,
+                part: 3,
+                category: "Parte 3: Pronomes Possessivos",
+                type: "multiple",
+                statement: "Complete a frase: 'As crianças guardaram os brinquedos em ______ caixas.'",
+                options: ["suas", "nossas", "minhas", "tuas"],
+                correctIndex: 0,
+                explanation: "As caixas pertencem a elas (3ª pessoa do plural), então usamos 'suas'."
+            },
+            {
+                id: 27,
+                part: 3,
+                category: "Parte 3: Pronomes Possessivos",
+                type: "multiple",
+                statement: "Qual é a forma no MASCULINO SINGULAR do pronome possessivo referente a NÓS?",
+                options: ["nosso", "nossa", "nossos", "nossas"],
+                correctIndex: 0,
+                explanation: "'Nosso' é o pronome possessivo masculino singular de 'nós'."
+            },
+            {
+                id: 28,
+                part: 3,
+                category: "Parte 3: Pronomes Possessivos",
+                type: "multiple",
+                statement: "Se a astronave pertence a mim e a você juntos (a nós), a astronave é:",
+                options: ["minha", "tua", "nossa", "sua"],
+                correctIndex: 2,
+                explanation: "'Nossa' é o pronome possessivo no feminino singular para 'nós'."
+            },
+            {
+                id: 29,
+                part: 3,
+                category: "Parte 3: Pronomes Possessivos",
+                type: "multiple",
+                statement: "Marque a opção que apresenta um pronome possessivo no FEMININO SINGULAR:",
+                options: ["meus", "tua", "seus", "nossos"],
+                correctIndex: 1,
+                explanation: "'Tua' é o pronome possessivo feminino singular (referente a 'tu')."
+            },
+            {
+                id: 30,
+                part: 3,
+                category: "Parte 3: Pronomes Possessivos",
+                type: "multiple",
+                statement: "Na frase 'Eu cuido com carinho das minhas estrelas', a palavra MINHAS é um pronome:",
+                options: [
+                    "Demonstrativo que mostra onde estão as estrelas.",
+                    "Possessivo que indica a quem pertencem as estrelas.",
+                    "Indefinido que não especifica a quantidade.",
+                    "Pessoal do caso reto."
+                ],
+                correctIndex: 1,
+                explanation: "'Minhas' é um pronome possessivo (1ª pessoa plural do feminino) que transmite ideia de posse."
+            }
+        ];
+
+        /* ESTADO GLOBAL DO QUIZ */
+        let processedQuestions = [];
+        let currentQuestionIndex = 0;
+        let userAnswers = [];
+        let isConfirmedList = [];
+
+        function processAndShuffleQuestions() {
+            processedQuestions = rawQuestions.map(q => {
+                if (q.type === "tf") {
+                    return { ...q, options: [...q.options] };
+                }
+
+                // Mapear opções e preservar qual é a correta
+                let optsObj = q.options.map((optText, idx) => ({
+                    text: optText,
+                    isCorrect: idx === q.correctIndex
+                }));
+
+                // Embaralhamento Fisher-Yates
+                for (let i = optsObj.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [optsObj[i], optsObj[j]] = [optsObj[j], optsObj[i]];
+                }
+
+                const newCorrectIdx = optsObj.findIndex(o => o.isCorrect);
+
+                return {
+                    ...q,
+                    options: optsObj.map(o => o.text),
+                    correctIndex: newCorrectIdx
+                };
+            });
+
+            userAnswers = new Array(processedQuestions.length).fill(null);
+            isConfirmedList = new Array(processedQuestions.length).fill(false);
+        }
+
+        function startQuiz() {
+            processAndShuffleQuestions();
+
+            document.getElementById('screen-welcome').classList.add('hidden');
+            document.getElementById('screen-quiz').classList.remove('hidden');
+            document.getElementById('open-menu-btn').classList.remove('hidden');
+            document.getElementById('score-pill').classList.remove('hidden');
+
+            currentQuestionIndex = 0;
+            renderQuestion();
+            updateScorePill();
+        }
+
+        function toggleTextCollapse() {
+            const content = document.getElementById('text-reading-content');
+            const btn = document.getElementById('text-toggle-btn');
+            if (content.classList.contains('hidden')) {
+                content.classList.remove('hidden');
+                btn.innerHTML = `<i class="fa-solid fa-chevron-up"></i> Ocultar`;
+            } else {
+                content.classList.add('hidden');
+                btn.innerHTML = `<i class="fa-solid fa-chevron-down"></i> Mostrar Texto`;
+            }
+        }
+
+        function renderQuestion() {
+            const q = processedQuestions[currentQuestionIndex];
+
+            // Tags
+            document.getElementById('question-category-tag').innerText = q.category;
+            document.getElementById('question-number-tag').innerText = `Questão ${q.id} de 30`;
+
+            // Progresso
+            const progressPct = ((currentQuestionIndex + 1) / processedQuestions.length) * 100;
+            document.getElementById('progress-bar').style.width = `${progressPct}%`;
+
+            // Caixa do Texto Base (Exibida APENAS na Parte 1: Q1 a Q6)
+            const textRefBox = document.getElementById('text-reference-box');
+            if (q.part === 1) {
+                textRefBox.classList.remove('hidden');
+            } else {
+                textRefBox.classList.add('hidden');
+            }
+
+            // Enunciado
+            document.getElementById('question-statement').innerText = q.statement;
+
+            // Renderizar Alternativas
+            const container = document.getElementById('options-container');
+            container.innerHTML = '';
+
+            const selectedIdx = userAnswers[currentQuestionIndex];
+            const isConfirmed = isConfirmedList[currentQuestionIndex];
+            const letters = ['A', 'B', 'C', 'D'];
+
+            q.options.forEach((optText, idx) => {
+                const btn = document.createElement('button');
+                btn.className = `option-btn w-full p-3.5 sm:p-4 rounded-2xl text-left border border-slate-700 bg-slate-900/90 text-slate-200 text-sm sm:text-base font-semibold flex items-center gap-3`;
+
+                if (isConfirmed) {
+                    btn.disabled = true;
+                    if (idx === q.correctIndex) {
+                        btn.classList.add('correct');
+                    } else if (idx === selectedIdx) {
+                        btn.classList.add('incorrect');
+                    }
+                } else if (selectedIdx === idx) {
+                    btn.classList.add('selected');
+                }
+
+                const prefixLetter = q.type === "tf" ? (idx === 0 ? 'V' : 'F') : letters[idx];
+                const prefixBg = q.type === "tf" 
+                    ? (idx === 0 ? 'bg-emerald-600 text-white' : 'bg-rose-600 text-white') 
+                    : 'bg-purple-900/60 text-purple-300 border-purple-400/30';
+
+                btn.innerHTML = `
+                    <span class="w-7 h-7 sm:w-8 sm:h-8 rounded-xl ${prefixBg} border flex items-center justify-center font-game text-xs sm:text-sm shrink-0">
+                        ${prefixLetter}
+                    </span>
+                    <span class="flex-1">${optText}</span>
+                `;
+
+                btn.onclick = () => selectOption(idx);
+                container.appendChild(btn);
+            });
+
+            // Feedback / Justificativa
+            const feedbackBox = document.getElementById('feedback-box');
+            if (isConfirmed) {
+                feedbackBox.classList.remove('hidden');
+                const isCorrect = selectedIdx === q.correctIndex;
+
+                if (isCorrect) {
+                    feedbackBox.className = "mb-6 p-4 rounded-2xl border bg-emerald-950/80 border-emerald-500/50 text-emerald-200";
+                    document.getElementById('feedback-icon').innerHTML = "🎉";
+                    document.getElementById('feedback-title').innerText = "Resposta Correta! Excelente!";
+                    document.getElementById('feedback-title').className = "font-game text-base sm:text-lg mb-1 text-emerald-300";
+                } else {
+                    feedbackBox.className = "mb-6 p-4 rounded-2xl border bg-rose-950/80 border-rose-500/50 text-rose-200";
+                    document.getElementById('feedback-icon').innerHTML = "💡";
+                    document.getElementById('feedback-title').innerText = "Ops! Resposta Incorreta.";
+                    document.getElementById('feedback-title').className = "font-game text-base sm:text-lg mb-1 text-rose-300";
+                }
+
+                document.getElementById('feedback-text').innerText = q.explanation;
+            } else {
+                feedbackBox.classList.add('hidden');
+            }
+
+            // Botoes
+            document.getElementById('btn-prev').disabled = currentQuestionIndex === 0;
+            document.getElementById('btn-prev').style.opacity = currentQuestionIndex === 0 ? '0.4' : '1';
+
+            const btnConfirm = document.getElementById('btn-confirm');
+            if (isConfirmed) {
+                btnConfirm.classList.add('hidden');
+            } else {
+                btnConfirm.classList.remove('hidden');
+                btnConfirm.disabled = selectedIdx === null;
+                btnConfirm.style.opacity = selectedIdx === null ? '0.5' : '1';
+            }
+
+            const btnNext = document.getElementById('btn-next');
+            if (currentQuestionIndex === processedQuestions.length - 1) {
+                btnNext.innerHTML = `Ver Relatório Final <i class="fa-solid fa-trophy text-yellow-300"></i>`;
+            } else {
+                btnNext.innerHTML = `Próxima <i class="fa-solid fa-arrow-right"></i>`;
+            }
+        }
+
+        function selectOption(index) {
+            if (isConfirmedList[currentQuestionIndex]) return;
+            userAnswers[currentQuestionIndex] = index;
+            renderQuestion();
+        }
+
+        function confirmAnswer() {
+            if (userAnswers[currentQuestionIndex] === null) return;
+
+            isConfirmedList[currentQuestionIndex] = true;
+            const q = processedQuestions[currentQuestionIndex];
+            const isCorrect = userAnswers[currentQuestionIndex] === q.correctIndex;
+
+            if (isCorrect && typeof confetti === 'function') {
+                confetti({
+                    particleCount: 50,
+                    spread: 60,
+                    origin: { y: 0.7 }
+                });
+            }
+
+            renderQuestion();
+            updateScorePill();
+        }
+
+        function prevQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                renderQuestion();
+            }
+        }
+
+        function nextQuestion() {
+            if (currentQuestionIndex < processedQuestions.length - 1) {
+                currentQuestionIndex++;
+                renderQuestion();
+            } else {
+                showReport();
+            }
+        }
+
+        function updateScorePill() {
+            let correctCount = 0;
+            userAnswers.forEach((ans, idx) => {
+                if (isConfirmedList[idx] && ans === processedQuestions[idx].correctIndex) {
+                    correctCount++;
+                }
+            });
+            document.getElementById('score-text').innerText = `${correctCount} / 30`;
+        }
+
+        function toggleQuestionMenu() {
+            const modal = document.getElementById('question-menu-modal');
+            const grid = document.getElementById('questions-grid');
+
+            if (modal.classList.contains('hidden')) {
+                grid.innerHTML = '';
+                processedQuestions.forEach((q, idx) => {
+                    const btn = document.createElement('button');
+                    const isAns = userAnswers[idx] !== null;
+                    const isConf = isConfirmedList[idx];
+                    const isCorr = isConf && userAnswers[idx] === q.correctIndex;
+
+                    let bgClass = "bg-slate-800 text-slate-300 border-slate-700";
+                    if (isConf) {
+                        bgClass = isCorr ? "bg-emerald-600 text-white border-emerald-400 font-bold" : "bg-rose-600 text-white border-rose-400 font-bold";
+                    } else if (isAns) {
+                        bgClass = "bg-blue-600 text-white border-blue-400";
+                    }
+
+                    if (idx === currentQuestionIndex) {
+                        bgClass += " ring-2 ring-yellow-400 ring-offset-2 ring-offset-slate-900";
+                    }
+
+                    btn.className = `p-3 rounded-xl border font-game text-sm flex flex-col items-center justify-center transition transform active:scale-95 ${bgClass}`;
+                    btn.innerHTML = `<span>Q${idx + 1}</span>`;
+
+                    btn.onclick = () => {
+                        currentQuestionIndex = idx;
+                        renderQuestion();
+                        toggleQuestionMenu();
+                    };
+
+                    grid.appendChild(btn);
+                });
+
+                modal.classList.remove('hidden');
+            } else {
+                modal.classList.add('hidden');
+            }
+        }
+
+        function showReport() {
+            document.getElementById('screen-quiz').classList.add('hidden');
+            document.getElementById('screen-report').classList.remove('hidden');
+            document.getElementById('open-menu-btn').classList.add('hidden');
+
+            let totalCorrect = 0;
+            let textCorrect = 0;
+            let demoCorrect = 0;
+            let possCorrect = 0;
+
+            processedQuestions.forEach((q, idx) => {
+                const isCorrect = isConfirmedList[idx] && userAnswers[idx] === q.correctIndex;
+                if (isCorrect) {
+                    totalCorrect++;
+                    if (q.part === 1) textCorrect++;
+                    if (q.part === 2) demoCorrect++;
+                    if (q.part === 3) possCorrect++;
+                }
+            });
+
+            const totalErrors = 30 - totalCorrect;
+            const correctPct = Math.round((totalCorrect / 30) * 100);
+            const errorPct = 100 - correctPct;
+
+            const demoPctVal = Math.round((demoCorrect / 12) * 100);
+            const possPctVal = Math.round((possCorrect / 12) * 100);
+
+            document.getElementById('stat-correct-count').innerText = totalCorrect;
+            document.getElementById('stat-correct-pct').innerText = `(${correctPct}%)`;
+            document.getElementById('stat-error-count').innerText = totalErrors;
+            document.getElementById('stat-error-pct').innerText = `(${errorPct}%)`;
+
+            document.getElementById('stat-demo-pct').innerText = `${demoPctVal}%`;
+            document.getElementById('stat-poss-pct').innerText = `${possPctVal}%`;
+
+            const reportEmoji = document.getElementById('report-emoji');
+            const reportTitle = document.getElementById('report-title');
+
+            if (correctPct >= 80) {
+                reportEmoji.innerText = "🏆";
+                reportTitle.innerText = "SENSACIONAL! MESTRE DOS PRONOMES!";
+                if (typeof confetti === 'function') confetti({ particleCount: 120, spread: 100 });
+            } else if (correctPct >= 60) {
+                reportEmoji.innerText = "🚀";
+                reportTitle.innerText = "MUITO BEM! ASTRONAUTA DEDICADO!";
+            } else {
+                reportEmoji.innerText = "👾";
+                reportTitle.innerText = "BOM ESFORÇO! VAMOS REVISAR?";
+            }
+
+            // Gerar recomendações de estudo APENAS SE houver volume relevante de erros
+            const recContainer = document.getElementById('review-recommendations');
+            recContainer.innerHTML = `<h3 class="font-game text-base sm:text-lg text-yellow-300 flex items-center gap-2">
+                <i class="fa-solid fa-clipboard-check"></i> Relatório & Recomendações de Estudo
+            </h3>`;
+
+            let hasNeedForReview = false;
+
+            if (demoPctVal < 70) {
+                hasNeedForReview = true;
+                recContainer.innerHTML += `
+                    <div class="bg-purple-900/40 border border-purple-500/40 p-3.5 rounded-xl text-xs sm:text-sm">
+                        <strong class="text-purple-300 font-bold block mb-1">📌 Revisão Recomendada: Pronomes Demonstrativos</strong>
+                        <p class="text-slate-300">Você errou algumas questões sobre a posição dos objetos:</p>
+                        <ul class="list-disc list-inside mt-1 space-y-1 text-slate-300">
+                            <li><strong>ESTE/ESTA/ESTES/ESTAS/ISTO:</strong> Coisas perto de quem fala (1ª pessoa).</li>
+                            <li><strong>ESSE/ESSA/ESSES/ESSAS/ISSO:</strong> Coisas perto de quem ouve (2ª pessoa).</li>
+                            <li><strong>AQUELE/AQUELA/AQUELES/AQUELAS/AQUILO:</strong> Coisas distantes de ambos (3ª pessoa).</li>
+                        </ul>
+                    </div>
+                `;
+            }
+
+            if (possPctVal < 70) {
+                hasNeedForReview = true;
+                recContainer.innerHTML += `
+                    <div class="bg-cyan-900/40 border border-cyan-500/40 p-3.5 rounded-xl text-xs sm:text-sm">
+                        <strong class="text-cyan-300 font-bold block mb-1">📌 Revisão Recomendada: Pronomes Possessivos</strong>
+                        <p class="text-slate-300">Revise os pronomes que indicam a quem pertence o objeto:</p>
+                        <ul class="list-disc list-inside mt-1 space-y-1 text-slate-300">
+                            <li><strong>1ª Pessoa (EU / NÓS):</strong> meu/minha/meus/minhas | nosso/nossa/nossos/nossas.</li>
+                            <li><strong>2ª Pessoa (TU / VÓS):</strong> teu/tua/teus/tuas | vosso/vossa/vossos/vossas.</li>
+                            <li><strong>3ª Pessoa (ELE/ELA / ELES/ELAS):</strong> seu/sua/seus/suas.</li>
+                        </ul>
+                    </div>
+                `;
+            }
+
+            if (textCorrect < 4) {
+                hasNeedForReview = true;
+                recContainer.innerHTML += `
+                    <div class="bg-indigo-900/40 border border-indigo-500/40 p-3.5 rounded-xl text-xs sm:text-sm">
+                        <strong class="text-indigo-300 font-bold block mb-1">📌 Revisão Recomendada: Leitura e Interpretação de Texto</strong>
+                        <p class="text-slate-300">Leia o texto sobre a montanha-russa com mais atenção aos detalhes históricos (século 15 na Rússia e inovações nos EUA).</p>
+                    </div>
+                `;
+            }
+
+            if (!hasNeedForReview) {
+                recContainer.innerHTML += `
+                    <div class="bg-emerald-900/40 border border-emerald-500/40 p-3.5 rounded-xl text-xs sm:text-sm text-emerald-200">
+                        ✨ <strong>Excelente aproveitamento!</strong> A quantidade de erros foi baixa e não há necessidade urgente de revisão nos tópicos. Parabéns pelo desempenho!
+                    </div>
+                `;
+            }
+        }
+
+        function restartQuiz() {
+            document.getElementById('screen-report').classList.add('hidden');
+            document.getElementById('screen-welcome').classList.remove('hidden');
+            document.getElementById('score-pill').classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
